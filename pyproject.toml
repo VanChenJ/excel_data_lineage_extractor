@@ -1,0 +1,15 @@
+[project]
+name = "excel-data-lineage-extractor"
+version = "0.1.0"
+description = "Extracts Excel metric lineage from named ranges and formulas."
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "openpyxl>=3.1.2",
+]
+
+[project.scripts]
+excel-lineage = "excel_lineage.cli:main"
+
+[tool.ruff]
+line-length = 100
