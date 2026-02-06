@@ -75,13 +75,22 @@ def _iter_named_destinations(wb, defined_name) -> Iterable[tuple[str, str]]:
         yield sheet_name, cell_range
 
 
+def _iter_defined_names(wb) -> Iterable:
+    defined_names = wb.defined_names
+    if hasattr(defined_names, "definedName"):
+        return defined_names.definedName
+    if hasattr(defined_names, "values"):
+        return defined_names.values()
+    return defined_names
+
+
 def extract_lineage(path: str) -> list[MetricLineage]:
     wb = load_workbook(path, data_only=False)
     lineages: list[MetricLineage] = []
-    for defined_name in wb.defined_names.definedName:
-        if defined_name.is_external:
+    for defined_name in _iter_defined_names(wb):
+        if getattr(defined_name, "is_external", False):
             continue
-        if not defined_name.name:
+        if not getattr(defined_name, "name", None):
             continue
         for sheet_name, cell_range in _iter_named_destinations(wb, defined_name):
             ws = wb[sheet_name]
